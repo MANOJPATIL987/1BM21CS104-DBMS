@@ -1,0 +1,96 @@
+create database manoj_insurance;
+use manoj_insurance ;
+create table  Person
+(
+  driver_id varchar(10) primary key ,
+  name varchar(20) not null ,
+  address varchar(30) not null
+  );
+  create table car
+  (
+   reg_num varchar(10) primary key,
+   model varchar(10) not null,
+   year int(4) not null
+   );
+  create table owns 
+  (
+   driver_id varchar(10),
+   reg_num varchar(10),
+   primary key (driver_id , reg_num),
+   foreign key (driver_id) references Person(driver_id),
+   foreign key (reg_num) references car (reg_num)
+   );
+   
+   create table accident 
+   (
+    report_num varchar(10) primary key,
+    accident_date date ,
+    location varchar(30)
+    );
+    
+    create table participated 
+    (
+     driver_id varchar(10),
+     reg_num varchar(10),
+     report_num varchar(10),
+     damage_amount float(6),
+      primary key (driver_id , reg_num , report_num ),
+     foreign key (driver_id) references Person(driver_id),
+	 foreign key (reg_num) references car (reg_num),
+	 foreign key (report_num) references accident (report_num)
+	);
+    
+    Desc Person ;
+    insert into Person 
+    values('21RC23A113', 'manoj' , 'Bengaluru') ;
+    insert into Person 
+    values ('21RC23A114' , 'sham' , 'raichur') , ('21RC23A116' , 'babu', 'mysore') , ('21RC23A118' , 'ramesh' , 'bellary') , ('21RC23A122' ,'nitin' , 'bidar'); 
+	select *from Person;
+    
+desc car ;
+insert into car 
+values ('21RN19A103', 'Q1', '2016'), ('21RN19A104', 'Q2', '2017'),('21RN19A105', 'Q3', '2018'),('21RN19A106', 'Q4', '2019'),('21RN19A107', 'Q5' ,'2020');
+
+
+  select *from car;
+  insert into owns 
+  values('21RC23A113','21RN19A123'),('21RC23A114','21RN19A124'),('21RC23A116','21RN19A125'),('21RC23A118','21RN19A126'),('21RC23A122','21RN19A127');
+  
+  select *from owns;
+  
+  insert into accident
+  values('11','2021-08-11','raichur');
+  insert into accident
+  values('12','2021-08-01','hoodi'),('15','2021-07-11','yeshvantpur'),('21','2021-08-17','yalhanka'),('13','2021-03-11','teachers colony');
+  
+  select *from accident ;
+  
+  insert into participated
+  values('21RC23A113','21RN19A103','11',4324.2),('21RC23A114','21RN19A104','12',245858),('21RC23A116','21RN19A105','15',57582),('21RC23A118','21RN19A106','21',67578),('21RC23A122','21RN19A107','13',2455);
+  
+ select *from participated;
+  
+select *from car order by year asc;
+  
+select count(distinct driver_id) 
+from participated a , accident b 
+where a.report_num=b.report_num AND b.accident_date like '__21%' ;
+
+select count(report_num)
+from car c, participated p 
+where c.model="Q1" and c.reg_num= p.reg_num;
+
+select *from car order by year asc;
+
+select avg(damage_amount) from participated ;
+
+delete from participated 
+where damage_amount < (select t.amt from(select avg(damage_amount) as amt from participated ) t);
+
+select p.name from person p , participated pa 
+where p.driver_id = pa.driver_id and pa.damage_amount > (select avg(damage_amount) from participated );
+
+select avg(damage_amount) from participated;
+
+select c.model from car c , accident a , participated pa 
+where pa.report_num = a.report_num and pa.reg_num  = c.reg_num and a.location='basavanagudi';
